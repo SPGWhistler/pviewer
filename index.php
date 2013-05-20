@@ -19,25 +19,28 @@ $fheight = '500px';
 	width: 100%;
 }
 .left {
-	background-color: red;
+	border: 1px solid gray;
 	float: left;
 	width: <?=$twidth;?>;
 	height: <?=$theight;?>;
 }
 .center {
-	background-color: yellow;
+	border: 1px solid gray;
 	margin: 0 auto;
 	width: <?=$fwidth;?>;
 	height: <?=$fheight;?>;
 }
 .right {
-	background-color: blue;
+	border: 1px solid gray;
 	float: right;
 	width: <?=$twidth;?>;
 	height: <?=$theight;?>;
 }
 .behind {
-	background-color: black;
+	border: 1px solid gray;
+	width: <?=$twidth;?>;
+	height: <?=$theight;?>;
+	z-index: -1;
 }
 .clear {
 	clear: both;
@@ -45,53 +48,27 @@ $fheight = '500px';
 </style>
 </head>
 <body>
-<?php
-$dir = '/Volumes/media_archive/new_media_archive_1';
-$pattern = '*.{jpg,JPG}';
-$flags = GLOB_BRACE;
-chdir($dir);
-
-function glob_recursive($pattern, $flags = 0)
-{
-	$files = glob($pattern, $flags);
-	foreach (glob(dirname($pattern).'/*', GLOB_ONLYDIR|GLOB_NOSORT) as $dir)
-	{
-		$files = array_merge($files, glob_recursive($dir.'/'.basename($pattern), $flags));
-	}
-	return $files;
-}
-
-$dirlist = glob('*', GLOB_ONLYDIR);
-
-if (!isset($_GET['dir'])) {
-	foreach ($dirlist as $dir) {
-		echo "<a href='index.php?dir=" . urlencode($dir) . "'>" . $dir . "</a><br />";
-	}
-	exit;
-}
-chdir($_GET['dir']);
-
-$files = glob_recursive($pattern, $flags);
-if (!isset($_GET['file'])) {
-	$_GET['file'] = $files[0];
-}
-$cur = array_search($_GET['file'], $files);
-$prev = ($cur > 0) ? $cur - 1 : NULL;
-$next = ($cur < count($files) - 1) ? $cur + 1: NULL;
-?>
 <script>
-	var prev = '<?=urlencode($files[$prev]);?>';
-	var cur = '<?=urlencode($files[$cur]);?>';
-	var next = '<?=urlencode($files[$next]);?>';
-	<?php
-	//echo "<a href='image.php?dir=" . urlencode($_GET['dir']) . "&file=" . urlencode($files[0]) . "'>" . $files[0] . "</a><br />";
-	?>
-
 	var rotate = {
 		locations: ['a', 'b', 'c', 'd'],
 
 		init : function() {
 			var self = this;
+			var search = location.search.substring(1);
+			var params = search?JSON.parse('{"' + search.replace(/&/g, '","').replace(/=/g,'":"') + '"}', function(key, value) { return key===""?value:decodeURIComponent(value) }):{}
+			this.dir = params.dir;
+			jQuery.getJSON('files.php', params, function(data){
+				self.files = data.files;
+				self.cur = data.cur;
+				if (data.cur > 0) {
+					jQuery('#a').html('<img src="image.php?dir=' + params.dir + '&file=' + self.files[data.cur - 1] + '" width="100%" height="100%" />');
+				}
+				jQuery('#b').html('<img src="image.php?dir=' + params.dir + '&file=' + self.files[data.cur] + '" width="100%" height="100%" />');
+				if (data.cur + 1 < self.files.length - 1) {
+					jQuery('#c').html('<img src="image.php?dir=' + params.dir + '&file=' + self.files[data.cur + 1] + '" width="100%" height="100%" />');
+				}
+				//jQuery('#d').html('<img src="image.php?dir=' + params.dir + '&file=' + self.files[data.cur + 2] + '" width="100%" height="100%" />');
+			});
 			this.left_offset = jQuery('#a').offset();
 			this.center_offset = jQuery('#b').offset();
 			this.right_offset = jQuery('#c').offset();
@@ -125,24 +102,49 @@ $next = ($cur < count($files) - 1) ? $cur + 1: NULL;
 
 		moveRight : function() {
 			//Move Right (pics rotate to left)
-			jQuery('#' + this.locations[3]).css({top: this.right_offset.top, left: this.right_offset.left, width: '<?=$twidth;?>', height: '<?=$theight;?>', 'z-index': '-1'});
-			jQuery('#' + this.locations[0]).css({'z-index': '-1'});
-			jQuery('#' + this.locations[1]).css({'z-index': '1'});
-			jQuery('#' + this.locations[1]).animate({top: this.left_offset.top, left: this.left_offset.left, width: '<?=$twidth;?>', height: '<?=$theight;?>'});
-			jQuery('#' + this.locations[2]).css({'z-index': '2'});
-			jQuery('#' + this.locations[2]).animate({top: this.center_offset.top, left: this.center_offset.left, width: '<?=$fwidth;?>', height: '<?=$fheight;?>'});
-			this.locations = [this.locations[1], this.locations[2], this.locations[3], this.locations[0]];
+			if (this.files[this.cur + 1]) {
+				jQuery('#' + this.locations[3]).css({top: this.right_offset.top, left: this.right_offset.left, width: '<?=$twidth;?>', height: '<?=$theight;?>', 'z-index': '-1'});
+				jQuery('#' + this.locations[0]).css({'z-index': '-1'});
+				jQuery('#' + this.locations[1]).css({'z-index': '1'});
+				jQuery('#' + this.locations[1]).animate({top: this.left_offset.top, left: this.left_offset.left, width: '<?=$twidth;?>', height: '<?=$theight;?>'});
+				jQuery('#' + this.locations[2]).css({'z-index': '2'});
+				jQuery('#' + this.locations[2]).animate({top: this.center_offset.top, left: this.center_offset.left, width: '<?=$fwidth;?>', height: '<?=$fheight;?>'});
+				this.locations = [this.locations[1], this.locations[2], this.locations[3], this.locations[0]];
+				this.loadImage('next');
+			}
 		},
 
 		moveLeft : function() {
 			//Move Left (pics rotate to right)
-			jQuery('#' + this.locations[3]).css({top: this.left_offset.top, left: this.left_offset.left, width: '<?=$twidth;?>', height: '<?=$theight;?>', 'z-index': '-1'});
-			jQuery('#' + this.locations[2]).css({'z-index': '-1'});
-			jQuery('#' + this.locations[1]).css({'z-index': '1'});
-			jQuery('#' + this.locations[1]).animate({top: this.right_offset.top, left: this.right_offset.left, width: '<?=$twidth;?>', height: '<?=$theight;?>'});
-			jQuery('#' + this.locations[0]).css({'z-index': '2'});
-			jQuery('#' + this.locations[0]).animate({top: this.center_offset.top, left: this.center_offset.left, width: '<?=$fwidth;?>', height: '<?=$fheight;?>'});
-			this.locations = [this.locations[3], this.locations[0], this.locations[1], this.locations[2]];
+			if (this.files[this.cur - 1]) {
+				jQuery('#' + this.locations[3]).css({top: this.left_offset.top, left: this.left_offset.left, width: '<?=$twidth;?>', height: '<?=$theight;?>', 'z-index': '-1'});
+				jQuery('#' + this.locations[2]).css({'z-index': '-1'});
+				jQuery('#' + this.locations[1]).css({'z-index': '1'});
+				jQuery('#' + this.locations[1]).animate({top: this.right_offset.top, left: this.right_offset.left, width: '<?=$twidth;?>', height: '<?=$theight;?>'});
+				jQuery('#' + this.locations[0]).css({'z-index': '2'});
+				jQuery('#' + this.locations[0]).animate({top: this.center_offset.top, left: this.center_offset.left, width: '<?=$fwidth;?>', height: '<?=$fheight;?>'});
+				this.locations = [this.locations[3], this.locations[0], this.locations[1], this.locations[2]];
+				this.loadImage('prev');
+			}
+		},
+
+		loadImage : function(image) {
+			switch (image) {
+				case 'next':
+					if (this.files[this.cur + 2]) {
+						jQuery('#' + this.locations[3]).html('<img src="image.php?dir=' + this.dir + '&file=' + this.files[this.cur + 2] + '" width="100%" height="100%" />');
+					} else {
+						jQuery('#' + this.locations[3]).html('');
+					}
+					break;
+				case 'prev':
+					if (this.files[this.cur - 2]) {
+						jQuery('#' + this.locations[3]).html('<img src="image.php?dir=' + this.dir + '&file=' + this.files[this.cur - 2] + '" width="100%" height="100%" />');
+					} else {
+						jQuery('#' + this.locations[3]).html('');
+					}
+					break;
+			}
 		}
 	};
 	$(document).ready(function(){
@@ -155,9 +157,9 @@ $next = ($cur < count($files) - 1) ? $cur + 1: NULL;
 <a href="index.php?dir=<?=urlencode($_GET['dir']);?>&file=<?=urlencode($files[$next]);?>"><img src='image.php?dir=<?=urlencode($_GET['dir']);?>&file=<?=urlencode($files[$next]);?>' /></a>
 -->
 <div class="container">
-	<div id="a" class="left"><img src='image.php?dir=<?=urlencode($_GET['dir']);?>&file=<?=urlencode($files[$prev]);?>' width="100%" height="100%" /></div>
-	<div id="c" class="right"><img src='image.php?dir=<?=urlencode($_GET['dir']);?>&file=<?=urlencode($files[$cur]);?>' width="100%" height="100%" /></div>
-	<div id="b" class="center"><img src='image.php?dir=<?=urlencode($_GET['dir']);?>&file=<?=urlencode($files[$next]);?>' width="100%" height="100%" /></div>
+	<div id="a" class="left"></div>
+	<div id="c" class="right"></div>
+	<div id="b" class="center"></div>
 	<div class="clear"></div>
 </div>
 <div id="d" class="behind"></div>
