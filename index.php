@@ -68,7 +68,7 @@ $fheight = '500px';
 					if (self.cur + 1 < self.files.length - 1) {
 						jQuery('#c').html('<img src="image.php?dir=' + params.dir + '&file=' + self.files[self.cur + 1] + '" width="100%" height="100%" />');
 					}
-					//jQuery('#d').html('<img src="image.php?dir=' + params.dir + '&file=' + self.files[self.cur + 2] + '" width="100%" height="100%" />');
+					//@TODO Pics are off by 1 - something to do with this or something.
 				});
 				this.left_offset = jQuery('#a').offset();
 				this.center_offset = jQuery('#b').offset();
@@ -87,6 +87,10 @@ $fheight = '500px';
 							//39 - right
 							self.moveRight();
 							break;
+						case 32:
+							//32 - space
+							self.loadFullImage();
+							break;
 					}
 				});
 				jQuery('#left').click(function(e){
@@ -100,7 +104,6 @@ $fheight = '500px';
 					return false;
 				});
 			} else {
-				console.log('dirlist');
 				jQuery('#pics').hide();
 				jQuery('#dirlist').show();
 				this.getList(params, function(data){
@@ -131,6 +134,7 @@ $fheight = '500px';
 				jQuery('#' + this.locations[2]).animate({top: this.center_offset.top, left: this.center_offset.left, width: '<?=$fwidth;?>', height: '<?=$fheight;?>'});
 				this.locations = [this.locations[1], this.locations[2], this.locations[3], this.locations[0]];
 				this.loadImage('next');
+				this.cur += 1;
 			}
 		},
 
@@ -145,11 +149,17 @@ $fheight = '500px';
 				jQuery('#' + this.locations[0]).animate({top: this.center_offset.top, left: this.center_offset.left, width: '<?=$fwidth;?>', height: '<?=$fheight;?>'});
 				this.locations = [this.locations[3], this.locations[0], this.locations[1], this.locations[2]];
 				this.loadImage('prev');
+				this.cur -= 1;
 			}
 		},
 
-		loadImage : function(image) {
-			switch (image) {
+		loadImage : function(direction) {
+			/*
+				if (self.cur + 1 < self.files.length - 1) {
+					jQuery('#d').html('<img src="image.php?dir=' + params.dir + '&file=' + self.files[self.cur + 2] + '" width="100%" height="100%" />');
+				}
+			*/
+			switch (direction) {
 				case 'next':
 					if (this.files[this.cur + 2]) {
 						jQuery('#' + this.locations[3]).html('<img src="image.php?dir=' + this.dir + '&file=' + this.files[this.cur + 2] + '" width="100%" height="100%" />');
@@ -165,6 +175,10 @@ $fheight = '500px';
 					}
 					break;
 			}
+		},
+
+		loadFullImage : function() {
+			jQuery('#' + this.locations[1]).html('<img src="images/' + this.dir + '/' + this.files[this.cur] + '" width="100%" height="100%" />');
 		}
 	};
 	$(document).ready(function(){
