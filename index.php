@@ -57,46 +57,66 @@ $fheight = '500px';
 			var search = location.search.substring(1);
 			var params = search?JSON.parse('{"' + search.replace(/&/g, '","').replace(/=/g,'":"') + '"}', function(key, value) { return key===""?value:decodeURIComponent(value) }):{}
 			this.dir = params.dir;
+			if (this.dir) {
+				this.getList(params, function(data) {
+					self.files = data.files;
+					self.cur = data.cur;
+					if (self.cur > 0) {
+						jQuery('#a').html('<img src="image.php?dir=' + params.dir + '&file=' + self.files[self.cur - 1] + '" width="100%" height="100%" />');
+					}
+					jQuery('#b').html('<img src="image.php?dir=' + params.dir + '&file=' + self.files[self.cur] + '" width="100%" height="100%" />');
+					if (self.cur + 1 < self.files.length - 1) {
+						jQuery('#c').html('<img src="image.php?dir=' + params.dir + '&file=' + self.files[self.cur + 1] + '" width="100%" height="100%" />');
+					}
+					//jQuery('#d').html('<img src="image.php?dir=' + params.dir + '&file=' + self.files[self.cur + 2] + '" width="100%" height="100%" />');
+				});
+				this.left_offset = jQuery('#a').offset();
+				this.center_offset = jQuery('#b').offset();
+				this.right_offset = jQuery('#c').offset();
+				jQuery('#a').css({position: 'absolute', top: this.left_offset.top, left: this.left_offset.left});
+				jQuery('#b').css({position: 'absolute', top: this.center_offset.top, left: this.center_offset.left, margin: 'auto', 'z-index': '2'});
+				jQuery('#c').css({position: 'absolute', top: this.right_offset.top, left: this.right_offset.left});
+				jQuery('#d').css({position: 'absolute'});
+				jQuery(document).bind('keydown', function(e){
+					switch (e.which) {
+						case 37:
+							//37 - left
+							self.moveLeft();
+							break;
+						case 39:
+							//39 - right
+							self.moveRight();
+							break;
+					}
+				});
+				jQuery('#left').click(function(e){
+					e.preventDefault();
+					self.moveLeft();
+					return false;
+				});
+				jQuery('#right').click(function(e){
+					e.preventDefault();
+					self.moveRight();
+					return false;
+				});
+			} else {
+				console.log('dirlist');
+				jQuery('#pics').hide();
+				jQuery('#dirlist').show();
+				this.getList(params, function(data){
+					var html = '';
+					for (var i in data) {
+						html += '<a href="index.php?dir=' + data[i] + '">' + data[i] + '</a><br />';
+					}
+					jQuery('#dirlist').html(html);
+				});
+			}
+		},
+
+		getList : function(params, callback) {
+			var self = this;
 			jQuery.getJSON('files.php', params, function(data){
-				self.files = data.files;
-				self.cur = data.cur;
-				if (data.cur > 0) {
-					jQuery('#a').html('<img src="image.php?dir=' + params.dir + '&file=' + self.files[data.cur - 1] + '" width="100%" height="100%" />');
-				}
-				jQuery('#b').html('<img src="image.php?dir=' + params.dir + '&file=' + self.files[data.cur] + '" width="100%" height="100%" />');
-				if (data.cur + 1 < self.files.length - 1) {
-					jQuery('#c').html('<img src="image.php?dir=' + params.dir + '&file=' + self.files[data.cur + 1] + '" width="100%" height="100%" />');
-				}
-				//jQuery('#d').html('<img src="image.php?dir=' + params.dir + '&file=' + self.files[data.cur + 2] + '" width="100%" height="100%" />');
-			});
-			this.left_offset = jQuery('#a').offset();
-			this.center_offset = jQuery('#b').offset();
-			this.right_offset = jQuery('#c').offset();
-			jQuery('#a').css({position: 'absolute', top: this.left_offset.top, left: this.left_offset.left});
-			jQuery('#b').css({position: 'absolute', top: this.center_offset.top, left: this.center_offset.left, margin: 'auto', 'z-index': '2'});
-			jQuery('#c').css({position: 'absolute', top: this.right_offset.top, left: this.right_offset.left});
-			jQuery('#d').css({position: 'absolute'});
-			jQuery(document).bind('keydown', function(e){
-				switch (e.which) {
-					case 37:
-						//37 - left
-						self.moveLeft();
-						break;
-					case 39:
-						//39 - right
-						self.moveRight();
-						break;
-				}
-			});
-			jQuery('#left').click(function(e){
-				e.preventDefault();
-				self.moveLeft();
-				return false;
-			});
-			jQuery('#right').click(function(e){
-				e.preventDefault();
-				self.moveRight();
-				return false;
+				callback(data);
 			});
 		},
 
@@ -156,15 +176,18 @@ $fheight = '500px';
 <a href="index.php?dir=<?=urlencode($_GET['dir']);?>&file=<?=urlencode($files[$cur]);?>"><img src='image.php?dir=<?=urlencode($_GET['dir']);?>&file=<?=urlencode($files[$cur]);?>' /></a>
 <a href="index.php?dir=<?=urlencode($_GET['dir']);?>&file=<?=urlencode($files[$next]);?>"><img src='image.php?dir=<?=urlencode($_GET['dir']);?>&file=<?=urlencode($files[$next]);?>' /></a>
 -->
-<div class="container">
-	<div id="a" class="left"></div>
-	<div id="c" class="right"></div>
-	<div id="b" class="center"></div>
-	<div class="clear"></div>
+<div id="pics">
+	<div class="container">
+		<div id="a" class="left"></div>
+		<div id="c" class="right"></div>
+		<div id="b" class="center"></div>
+		<div class="clear"></div>
+	</div>
+	<div id="d" class="behind"></div>
+	<div class="links">
+		<a id="left" href="#">&lt;--</a> | <a id="right" href="#">--&gt;</a>
+	</div>
 </div>
-<div id="d" class="behind"></div>
-<div class="links">
-	<a id="left" href="#">&lt;--</a> | <a id="right" href="#">--&gt;</a>
-</div>
+<div id="dirlist"></div>
 </body>
 </html>
