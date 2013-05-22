@@ -1,8 +1,12 @@
 <?php
-$twidth = '160px';
-$theight = '120px';
-$fwidth = '500px';
-$fheight = '500px';
+$twidth = 160;
+$theight = 120;
+$fwidth = 765;
+$fheight = 510;
+$twidth .= 'px';
+$theight .= 'px';
+$fwidth .= 'px';
+$fheight .= 'px';
 ?>
 <html>
 <head>
@@ -42,6 +46,23 @@ $fheight = '500px';
 	height: <?=$theight;?>;
 	z-index: -1;
 }
+.fullsize {
+	position: absolute !important;
+	left: 0 !important;
+	top: 0 !important;
+	right: -10000 !important;
+	bottom: -10000 !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	overflow: scroll !important;
+	width: auto !important;
+	height: auto !important;
+	z-index: 1000 !important;
+}
+.fullsize img {
+	width: auto !important;
+	height: auto !important;
+}
 .clear {
 	clear: both;
 }
@@ -54,6 +75,12 @@ $fheight = '500px';
 
 		enabled: false,
 
+		timer: null,
+
+		cur_deg: 0,
+
+		isFullImage: false,
+
 		init : function() {
 			var self = this;
 			var search = location.search.substring(1);
@@ -63,9 +90,6 @@ $fheight = '500px';
 				this.getList(params, function(data) {
 					self.files = data.files;
 					self.cur = data.cur;
-					console.debug('start cur', self.cur);
-					console.debug('start file', self.files[self.cur]);
-					console.debug('start locations', self.locations);
 					if (self.cur > 0) {
 						jQuery('#a').html('<img src="image.php?dir=' + params.dir + '&file=' + self.files[self.cur - 1] + '" width="100%" height="100%" />');
 					}
@@ -77,6 +101,7 @@ $fheight = '500px';
 						jQuery('#d').html('<img src="image.php?dir=' + params.dir + '&file=' + self.files[self.cur + 2] + '" width="100%" height="100%" />');
 					}
 					self.enabled = true;
+					self.startTimer();
 				});
 				this.left_offset = jQuery('#a').offset();
 				this.center_offset = jQuery('#b').offset();
@@ -98,6 +123,25 @@ $fheight = '500px';
 						case 32:
 							//32 - space
 							self.loadFullImage();
+							break;
+						case 70:
+							//70 - f
+							self.toggleFullImage();
+							break;
+						default:
+							console.log(e.which);
+							break;
+					}
+				});
+				jQuery(document).bind('keypress', function(e) {
+					switch (e.which) {
+						case 82:
+							//82 - R (rotate counter clockwise)
+							self.rotateImage(false, self.cur_deg - 90);
+							break;
+						case 114:
+							//114 - r (rotate clockwise)
+							self.rotateImage();
 							break;
 					}
 				});
@@ -136,6 +180,7 @@ $fheight = '500px';
 			var self = this;
 			if (this.enabled === true && this.files[this.cur + 1]) {
 				this.enabled = false;
+				this.rotateImage(true, 0);
 				jQuery('#' + this.locations[3]).css({top: this.right_offset.top, left: this.right_offset.left, width: '<?=$twidth;?>', height: '<?=$theight;?>', 'z-index': '-1'});
 				jQuery('#' + this.locations[0]).css({'z-index': '-1'});
 				jQuery('#' + this.locations[1]).css({'z-index': '1'});
@@ -145,6 +190,7 @@ $fheight = '500px';
 					self.enabled = true;
 					self.locations = [self.locations[1], self.locations[2], self.locations[3], self.locations[0]];
 					self.cur += 1;
+					self.startTimer();
 					self.loadImage('next');
 				});
 			}
@@ -155,6 +201,7 @@ $fheight = '500px';
 			var self = this;
 			if (this.enabled === true && this.files[this.cur - 1]) {
 				this.enabled = false;
+				this.rotateImage(true, 0);
 				jQuery('#' + this.locations[3]).css({top: this.left_offset.top, left: this.left_offset.left, width: '<?=$twidth;?>', height: '<?=$theight;?>', 'z-index': '-1'});
 				jQuery('#' + this.locations[2]).css({'z-index': '-1'});
 				jQuery('#' + this.locations[1]).css({'z-index': '1'});
@@ -164,6 +211,7 @@ $fheight = '500px';
 					self.enabled = true;
 					self.locations = [self.locations[3], self.locations[0], self.locations[1], self.locations[2]];
 					self.cur -= 1;
+					self.startTimer();
 					self.loadImage('prev');
 				});
 			}
@@ -172,33 +220,74 @@ $fheight = '500px';
 		loadImage : function(direction) {
 			switch (direction) {
 				case 'next':
-					console.debug('cur', this.cur);
-					console.debug('file', this.files[this.cur]);
-					console.debug('locations', this.locations);
 					if (this.files[this.cur + 2]) {
 						jQuery('#' + this.locations[3]).html('<img src="image.php?dir=' + this.dir + '&file=' + this.files[this.cur + 2] + '" width="100%" height="100%" />');
 					} else {
-						jQuery('#' + this.locations[3]).html('');
+						jQuery('#' + this.locations[3]).empty();
 					}
 					break;
 				case 'prev':
-					console.debug('cur', this.cur);
-					console.debug('file', this.files[this.cur]);
-					console.debug('locations', this.locations);
 					if (this.files[this.cur - 2]) {
 						jQuery('#' + this.locations[3]).html('<img src="image.php?dir=' + this.dir + '&file=' + this.files[this.cur - 2] + '" width="100%" height="100%" />');
 					} else {
-						jQuery('#' + this.locations[3]).html('');
+						jQuery('#' + this.locations[3]).empty();
 					}
 					break;
 			}
 		},
 
 		loadFullImage : function() {
-			console.debug('cur', this.cur);
-			console.debug('file', this.files[this.cur]);
-			console.debug('locations', this.locations);
-			jQuery('#' + this.locations[1]).html('<img src="images/' + this.dir + '/' + this.files[this.cur] + '" width="100%" height="100%" />');
+			var self = this;
+			var cur_cur = this.cur;
+			clearTimeout(this.timer);
+			$('<img width="100%" height="100%" />').load(function(){
+				if (cur_cur === self.cur) {
+					jQuery('#' + self.locations[1]).html(this);
+				}
+			}).attr('src', 'images/' + this.dir + '/' + this.files[this.cur]);
+		},
+
+		startTimer : function() {
+			var self = this;
+			clearTimeout(this.timer);
+			this.timer = setTimeout(function() {
+				self.loadFullImage();
+			}, 2000);
+		},
+
+		rotateImage : function(noanimate, d) {
+			var self = this;
+			var dur = (noanimate) ? 0 : 1000;
+			d = (typeof d === 'number') ? d : this.cur_deg + 90;
+			var elem = jQuery("#" + this.locations[1]);
+			if (this.cur_deg != d) {
+				jQuery({deg: this.cur_deg}).animate({deg: d}, {
+					duration: dur,
+					step: function(now){
+						elem.css({
+							transform: "rotate(" + now + "deg)"
+						});
+					},
+					complete: function() {
+						if (d >= 360) {
+							d = 0;
+						}
+						self.cur_deg = d;
+					}
+				});
+			}
+		},
+
+		toggleFullImage : function() {
+			if (!this.isFullImage) {
+				this.isFullImage = true;
+				this.enabled = false;
+				jQuery('#' + this.locations[1]).addClass('fullsize');
+			} else {
+				this.isFullImage = false;
+				this.enabled = true;
+				jQuery('#' + this.locations[1]).removeClass('fullsize');
+			}
 		}
 	};
 	$(document).ready(function(){
