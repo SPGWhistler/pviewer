@@ -19,25 +19,25 @@ $fheight = '500px';
 	width: 100%;
 }
 .left {
-	border: 1px solid gray;
+	background-color: #fff;
 	float: left;
 	width: <?=$twidth;?>;
 	height: <?=$theight;?>;
 }
 .center {
-	border: 1px solid gray;
+	background-color: #fff;
 	margin: 0 auto;
 	width: <?=$fwidth;?>;
 	height: <?=$fheight;?>;
 }
 .right {
-	border: 1px solid gray;
+	background-color: #fff;
 	float: right;
 	width: <?=$twidth;?>;
 	height: <?=$theight;?>;
 }
 .behind {
-	border: 1px solid gray;
+	background-color: #fff;
 	width: <?=$twidth;?>;
 	height: <?=$theight;?>;
 	z-index: -1;
@@ -63,6 +63,9 @@ $fheight = '500px';
 				this.getList(params, function(data) {
 					self.files = data.files;
 					self.cur = data.cur;
+					console.debug('start cur', self.cur);
+					console.debug('start file', self.files[self.cur]);
+					console.debug('start locations', self.locations);
 					if (self.cur > 0) {
 						jQuery('#a').html('<img src="image.php?dir=' + params.dir + '&file=' + self.files[self.cur - 1] + '" width="100%" height="100%" />');
 					}
@@ -70,7 +73,9 @@ $fheight = '500px';
 					if (self.cur + 1 < self.files.length - 1) {
 						jQuery('#c').html('<img src="image.php?dir=' + params.dir + '&file=' + self.files[self.cur + 1] + '" width="100%" height="100%" />');
 					}
-					//@TODO Pics are off by 1 - something to do with this or something.
+					if (self.cur + 2 < self.files.length - 1) {
+						jQuery('#d').html('<img src="image.php?dir=' + params.dir + '&file=' + self.files[self.cur + 2] + '" width="100%" height="100%" />');
+					}
 					self.enabled = true;
 				});
 				this.left_offset = jQuery('#a').offset();
@@ -84,11 +89,11 @@ $fheight = '500px';
 					switch (e.which) {
 						case 37:
 							//37 - left
-							self.moveLeft();
+							self.movePrev();
 							break;
 						case 39:
 							//39 - right
-							self.moveRight();
+							self.moveNext();
 							break;
 						case 32:
 							//32 - space
@@ -98,12 +103,12 @@ $fheight = '500px';
 				});
 				jQuery('#left').click(function(e){
 					e.preventDefault();
-					self.moveLeft();
+					self.movePrev();
 					return false;
 				});
 				jQuery('#right').click(function(e){
 					e.preventDefault();
-					self.moveRight();
+					self.moveNext();
 					return false;
 				});
 			} else {
@@ -126,7 +131,7 @@ $fheight = '500px';
 			});
 		},
 
-		moveRight : function() {
+		moveNext : function() {
 			//Move Right (pics rotate to left)
 			var self = this;
 			if (this.enabled === true && this.files[this.cur + 1]) {
@@ -138,14 +143,14 @@ $fheight = '500px';
 				jQuery('#' + this.locations[2]).css({'z-index': '2'});
 				jQuery('#' + this.locations[2]).animate({top: this.center_offset.top, left: this.center_offset.left, width: '<?=$fwidth;?>', height: '<?=$fheight;?>'}, function(){
 					self.enabled = true;
+					self.locations = [self.locations[1], self.locations[2], self.locations[3], self.locations[0]];
+					self.cur += 1;
+					self.loadImage('next');
 				});
-				this.locations = [this.locations[1], this.locations[2], this.locations[3], this.locations[0]];
-				this.loadImage('next');
-				this.cur += 1;
 			}
 		},
 
-		moveLeft : function() {
+		movePrev : function() {
 			//Move Left (pics rotate to right)
 			var self = this;
 			if (this.enabled === true && this.files[this.cur - 1]) {
@@ -157,21 +162,19 @@ $fheight = '500px';
 				jQuery('#' + this.locations[0]).css({'z-index': '2'});
 				jQuery('#' + this.locations[0]).animate({top: this.center_offset.top, left: this.center_offset.left, width: '<?=$fwidth;?>', height: '<?=$fheight;?>'}, function() {
 					self.enabled = true;
+					self.locations = [self.locations[3], self.locations[0], self.locations[1], self.locations[2]];
+					self.cur -= 1;
+					self.loadImage('prev');
 				});
-				this.locations = [this.locations[3], this.locations[0], this.locations[1], this.locations[2]];
-				this.loadImage('prev');
-				this.cur -= 1;
 			}
 		},
 
 		loadImage : function(direction) {
-			/*
-				if (self.cur + 1 < self.files.length - 1) {
-					jQuery('#d').html('<img src="image.php?dir=' + params.dir + '&file=' + self.files[self.cur + 2] + '" width="100%" height="100%" />');
-				}
-			*/
 			switch (direction) {
 				case 'next':
+					console.debug('cur', this.cur);
+					console.debug('file', this.files[this.cur]);
+					console.debug('locations', this.locations);
 					if (this.files[this.cur + 2]) {
 						jQuery('#' + this.locations[3]).html('<img src="image.php?dir=' + this.dir + '&file=' + this.files[this.cur + 2] + '" width="100%" height="100%" />');
 					} else {
@@ -179,6 +182,9 @@ $fheight = '500px';
 					}
 					break;
 				case 'prev':
+					console.debug('cur', this.cur);
+					console.debug('file', this.files[this.cur]);
+					console.debug('locations', this.locations);
 					if (this.files[this.cur - 2]) {
 						jQuery('#' + this.locations[3]).html('<img src="image.php?dir=' + this.dir + '&file=' + this.files[this.cur - 2] + '" width="100%" height="100%" />');
 					} else {
@@ -189,6 +195,9 @@ $fheight = '500px';
 		},
 
 		loadFullImage : function() {
+			console.debug('cur', this.cur);
+			console.debug('file', this.files[this.cur]);
+			console.debug('locations', this.locations);
 			jQuery('#' + this.locations[1]).html('<img src="images/' + this.dir + '/' + this.files[this.cur] + '" width="100%" height="100%" />');
 		}
 	};
