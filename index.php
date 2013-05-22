@@ -52,6 +52,8 @@ $fheight = '500px';
 	var rotate = {
 		locations: ['a', 'b', 'c', 'd'],
 
+		enabled: false,
+
 		init : function() {
 			var self = this;
 			var search = location.search.substring(1);
@@ -69,6 +71,7 @@ $fheight = '500px';
 						jQuery('#c').html('<img src="image.php?dir=' + params.dir + '&file=' + self.files[self.cur + 1] + '" width="100%" height="100%" />');
 					}
 					//@TODO Pics are off by 1 - something to do with this or something.
+					self.enabled = true;
 				});
 				this.left_offset = jQuery('#a').offset();
 				this.center_offset = jQuery('#b').offset();
@@ -125,13 +128,17 @@ $fheight = '500px';
 
 		moveRight : function() {
 			//Move Right (pics rotate to left)
-			if (this.files[this.cur + 1]) {
+			var self = this;
+			if (this.enabled === true && this.files[this.cur + 1]) {
+				this.enabled = false;
 				jQuery('#' + this.locations[3]).css({top: this.right_offset.top, left: this.right_offset.left, width: '<?=$twidth;?>', height: '<?=$theight;?>', 'z-index': '-1'});
 				jQuery('#' + this.locations[0]).css({'z-index': '-1'});
 				jQuery('#' + this.locations[1]).css({'z-index': '1'});
 				jQuery('#' + this.locations[1]).animate({top: this.left_offset.top, left: this.left_offset.left, width: '<?=$twidth;?>', height: '<?=$theight;?>'});
 				jQuery('#' + this.locations[2]).css({'z-index': '2'});
-				jQuery('#' + this.locations[2]).animate({top: this.center_offset.top, left: this.center_offset.left, width: '<?=$fwidth;?>', height: '<?=$fheight;?>'});
+				jQuery('#' + this.locations[2]).animate({top: this.center_offset.top, left: this.center_offset.left, width: '<?=$fwidth;?>', height: '<?=$fheight;?>'}, function(){
+					self.enabled = true;
+				});
 				this.locations = [this.locations[1], this.locations[2], this.locations[3], this.locations[0]];
 				this.loadImage('next');
 				this.cur += 1;
@@ -140,13 +147,17 @@ $fheight = '500px';
 
 		moveLeft : function() {
 			//Move Left (pics rotate to right)
-			if (this.files[this.cur - 1]) {
+			var self = this;
+			if (this.enabled === true && this.files[this.cur - 1]) {
+				this.enabled = false;
 				jQuery('#' + this.locations[3]).css({top: this.left_offset.top, left: this.left_offset.left, width: '<?=$twidth;?>', height: '<?=$theight;?>', 'z-index': '-1'});
 				jQuery('#' + this.locations[2]).css({'z-index': '-1'});
 				jQuery('#' + this.locations[1]).css({'z-index': '1'});
 				jQuery('#' + this.locations[1]).animate({top: this.right_offset.top, left: this.right_offset.left, width: '<?=$twidth;?>', height: '<?=$theight;?>'});
 				jQuery('#' + this.locations[0]).css({'z-index': '2'});
-				jQuery('#' + this.locations[0]).animate({top: this.center_offset.top, left: this.center_offset.left, width: '<?=$fwidth;?>', height: '<?=$fheight;?>'});
+				jQuery('#' + this.locations[0]).animate({top: this.center_offset.top, left: this.center_offset.left, width: '<?=$fwidth;?>', height: '<?=$fheight;?>'}, function() {
+					self.enabled = true;
+				});
 				this.locations = [this.locations[3], this.locations[0], this.locations[1], this.locations[2]];
 				this.loadImage('prev');
 				this.cur -= 1;
