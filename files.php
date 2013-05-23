@@ -1,6 +1,6 @@
 <?php
-//$dir = '/Volumes/media_archive/new_media_archive_1';
-$dir = '/Users/tpetty/Pictures/Eye-Fi';
+$dir = '/Volumes/media_archive/new_media_archive_1';
+//$dir = '/Users/tpetty/Pictures/Eye-Fi';
 $pattern = '*.{jpg,JPG}';
 $flags = GLOB_BRACE;
 chdir($dir);
