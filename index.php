@@ -128,9 +128,15 @@ $fheight .= 'px';
 							//70 - f
 							self.toggleFullImage();
 							break;
+						case 13:
+							//13 - enter
+							self.addFile();
+							break;
+						/*
 						default:
 							console.log(e.which);
 							break;
+						*/
 					}
 				});
 				jQuery(document).bind('keypress', function(e) {
@@ -288,6 +294,17 @@ $fheight .= 'px';
 				this.enabled = true;
 				jQuery('#' + this.locations[1]).removeClass('fullsize');
 			}
+		},
+
+		addFile : function() {
+			var self = this;
+			jQuery.getJSON('save.php', {dir: this.dir, file: this.files[this.cur]}, function(data){
+				if (data.success === false) {
+					alert("File not added to list: " + data.reason);
+				} else {
+					self.moveNext();
+				}
+			});
 		}
 	};
 	$(document).ready(function(){
