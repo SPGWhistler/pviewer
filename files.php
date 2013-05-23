@@ -23,7 +23,9 @@ if (!isset($_GET['dir'])) {
 		echo "<a href='index.php?dir=" . urlencode($dir) . "'>" . $dir . "</a><br />";
 	}
 	*/
-	echo json_encode($dirlist);
+	echo json_encode(array(
+		'dirs' => $dirlist
+	));
 	exit;
 }
 chdir($_GET['dir']);

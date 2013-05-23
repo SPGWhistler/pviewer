@@ -87,21 +87,25 @@ $fheight .= 'px';
 			var params = search?JSON.parse('{"' + search.replace(/&/g, '","').replace(/=/g,'":"') + '"}', function(key, value) { return key===""?value:decodeURIComponent(value) }):{}
 			this.dir = params.dir;
 			if (this.dir) {
-				this.getList(params, function(data) {
-					self.files = data.files;
-					self.cur = data.cur;
-					if (self.cur > 0) {
-						jQuery('#a').html('<img src="image.php?dir=' + params.dir + '&file=' + self.files[self.cur - 1] + '" width="100%" height="100%" />');
-					}
-					jQuery('#b').html('<img src="image.php?dir=' + params.dir + '&file=' + self.files[self.cur] + '" width="100%" height="100%" />');
-					if (self.cur + 1 < self.files.length - 1) {
-						jQuery('#c').html('<img src="image.php?dir=' + params.dir + '&file=' + self.files[self.cur + 1] + '" width="100%" height="100%" />');
-					}
-					if (self.cur + 2 < self.files.length - 1) {
-						jQuery('#d').html('<img src="image.php?dir=' + params.dir + '&file=' + self.files[self.cur + 2] + '" width="100%" height="100%" />');
-					}
-					self.enabled = true;
-					self.startTimer();
+				this.getList({}, function(data){
+					self.dirs = data.dirs;
+					self.curdir = data.dirs.indexOf(self.dir);
+					self.getList(params, function(data) {
+						self.files = data.files;
+						self.cur = data.cur;
+						if (self.cur > 0) {
+							jQuery('#a').html('<img src="image.php?dir=' + params.dir + '&file=' + self.files[self.cur - 1] + '" width="100%" height="100%" />');
+						}
+						jQuery('#b').html('<img src="image.php?dir=' + params.dir + '&file=' + self.files[self.cur] + '" width="100%" height="100%" />');
+						if (self.cur + 1 < self.files.length - 1) {
+							jQuery('#c').html('<img src="image.php?dir=' + params.dir + '&file=' + self.files[self.cur + 1] + '" width="100%" height="100%" />');
+						}
+						if (self.cur + 2 < self.files.length - 1) {
+							jQuery('#d').html('<img src="image.php?dir=' + params.dir + '&file=' + self.files[self.cur + 2] + '" width="100%" height="100%" />');
+						}
+						self.enabled = true;
+						self.startTimer();
+					});
 				});
 				this.left_offset = jQuery('#a').offset();
 				this.center_offset = jQuery('#b').offset();
@@ -131,6 +135,14 @@ $fheight .= 'px';
 						case 13:
 							//13 - enter
 							self.addFile();
+							break;
+						case 40:
+							//40 - down
+							self.moveNextDir();
+							break;
+						case 38:
+							//38 - up
+							self.movePrevDir();
 							break;
 						/*
 						default:
@@ -166,8 +178,8 @@ $fheight .= 'px';
 				jQuery('#dirlist').show();
 				this.getList(params, function(data){
 					var html = '';
-					for (var i in data) {
-						html += '<a href="index.php?dir=' + data[i] + '">' + data[i] + '</a><br />';
+					for (var i in data.dirs) {
+						html += '<a href="index.php?dir=' + data.dirs[i] + '">' + data.dirs[i] + '</a><br />';
 					}
 					jQuery('#dirlist').html(html);
 				});
@@ -305,6 +317,18 @@ $fheight .= 'px';
 					self.moveNext();
 				}
 			});
+		},
+
+		moveNextDir : function() {
+			if (this.dirs[this.curdir + 1]) {
+				window.location = 'index.php?dir=' + this.dirs[this.curdir + 1];
+			}
+		},
+
+		movePrevDir : function() {
+			if (this.dirs[this.curdir - 1]) {
+				window.location = 'index.php?dir=' + this.dirs[this.curdir - 1];
+			}
 		}
 	};
 	$(document).ready(function(){
