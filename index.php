@@ -270,7 +270,7 @@ $fheight .= 'px';
 			clearTimeout(this.timer);
 			this.timer = setTimeout(function() {
 				self.loadFullImage();
-			}, 2000);
+			}, 750);
 		},
 
 		rotateImage : function(noanimate, d) {
