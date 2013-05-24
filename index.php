@@ -202,9 +202,9 @@ $fheight .= 'px';
 				jQuery('#' + this.locations[3]).css({top: this.right_offset.top, left: this.right_offset.left, width: '<?=$twidth;?>', height: '<?=$theight;?>', 'z-index': '-1'});
 				jQuery('#' + this.locations[0]).css({'z-index': '-1'});
 				jQuery('#' + this.locations[1]).css({'z-index': '1'});
-				jQuery('#' + this.locations[1]).animate({top: this.left_offset.top, left: this.left_offset.left, width: '<?=$twidth;?>', height: '<?=$theight;?>'});
+				jQuery('#' + this.locations[1]).animate({top: this.left_offset.top, left: this.left_offset.left, width: '<?=$twidth;?>', height: '<?=$theight;?>'}, 200);
 				jQuery('#' + this.locations[2]).css({'z-index': '2'});
-				jQuery('#' + this.locations[2]).animate({top: this.center_offset.top, left: this.center_offset.left, width: '<?=$fwidth;?>', height: '<?=$fheight;?>'}, function(){
+				jQuery('#' + this.locations[2]).animate({top: this.center_offset.top, left: this.center_offset.left, width: '<?=$fwidth;?>', height: '<?=$fheight;?>'}, 200, function(){
 					self.enabled = true;
 					self.locations = [self.locations[1], self.locations[2], self.locations[3], self.locations[0]];
 					self.cur += 1;
@@ -223,9 +223,9 @@ $fheight .= 'px';
 				jQuery('#' + this.locations[3]).css({top: this.left_offset.top, left: this.left_offset.left, width: '<?=$twidth;?>', height: '<?=$theight;?>', 'z-index': '-1'});
 				jQuery('#' + this.locations[2]).css({'z-index': '-1'});
 				jQuery('#' + this.locations[1]).css({'z-index': '1'});
-				jQuery('#' + this.locations[1]).animate({top: this.right_offset.top, left: this.right_offset.left, width: '<?=$twidth;?>', height: '<?=$theight;?>'});
+				jQuery('#' + this.locations[1]).animate({top: this.right_offset.top, left: this.right_offset.left, width: '<?=$twidth;?>', height: '<?=$theight;?>'}, 200);
 				jQuery('#' + this.locations[0]).css({'z-index': '2'});
-				jQuery('#' + this.locations[0]).animate({top: this.center_offset.top, left: this.center_offset.left, width: '<?=$fwidth;?>', height: '<?=$fheight;?>'}, function() {
+				jQuery('#' + this.locations[0]).animate({top: this.center_offset.top, left: this.center_offset.left, width: '<?=$fwidth;?>', height: '<?=$fheight;?>'}, 200, function() {
 					self.enabled = true;
 					self.locations = [self.locations[3], self.locations[0], self.locations[1], self.locations[2]];
 					self.cur -= 1;
@@ -275,7 +275,7 @@ $fheight .= 'px';
 
 		rotateImage : function(noanimate, d) {
 			var self = this;
-			var dur = (noanimate) ? 0 : 1000;
+			var dur = (noanimate) ? 0 : 400;
 			d = (typeof d === 'number') ? d : this.cur_deg + 90;
 			var elem = jQuery("#" + this.locations[1]);
 			if (this.cur_deg != d) {
