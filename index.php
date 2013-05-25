@@ -21,26 +21,46 @@ $fheight .= 'px';
 }
 .container {
 	width: 100%;
+	height: 100%;
+	display: table;
+	overflow: hidden;
+	position: static;
+}
+.left-col {
+	display: table-cell;
+	vertical-align: middle;
+	position: static;
 }
 .left {
-	background-color: #fff;
+	background-color: blue;
 	float: left;
 	width: <?=$twidth;?>;
 	height: <?=$theight;?>;
 }
+.center-col {
+	display: table-cell;
+	vertical-align: middle;
+	position: static;
+}
 .center {
-	background-color: #fff;
+	background-color: green;
 	margin: 0 auto;
 	width: <?=$fwidth;?>;
 	height: <?=$fheight;?>;
 }
+.right-col {
+	display: table-cell;
+	vertical-align: middle;
+	position: static;
+}
 .right {
-	background-color: #fff;
+	background-color: red;
 	float: right;
 	width: <?=$twidth;?>;
 	height: <?=$theight;?>;
 }
 .behind {
+	display: none;
 	background-color: #fff;
 	width: <?=$twidth;?>;
 	height: <?=$theight;?>;
@@ -113,7 +133,7 @@ $fheight .= 'px';
 				jQuery('#a').css({position: 'absolute', top: this.left_offset.top, left: this.left_offset.left});
 				jQuery('#b').css({position: 'absolute', top: this.center_offset.top, left: this.center_offset.left, margin: 'auto', 'z-index': '2'});
 				jQuery('#c').css({position: 'absolute', top: this.right_offset.top, left: this.right_offset.left});
-				jQuery('#d').css({position: 'absolute'});
+				jQuery('#d').css({position: 'absolute', top: this.right_offset.top, left: this.right_offset.left, display: 'block'});
 				jQuery(document).bind('keydown', function(e){
 					switch (e.which) {
 						case 37:
@@ -342,9 +362,15 @@ $fheight .= 'px';
 -->
 <div id="pics">
 	<div class="container">
-		<div id="a" class="left"></div>
-		<div id="c" class="right"></div>
-		<div id="b" class="center"></div>
+		<div class="left-col">
+			<div id="a" class="left"></div>
+		</div>
+		<div class="center-col">
+			<div id="b" class="center"></div>
+		</div>
+		<div class="right-col">
+			<div id="c" class="right"></div>
+		</div>
 		<div class="clear"></div>
 	</div>
 	<div id="d" class="behind"></div>
