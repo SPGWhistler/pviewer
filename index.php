@@ -1,8 +1,8 @@
 <?php
 $twidth = 160;
 $theight = 120;
-$fwidth = 765;
-$fheight = 510;
+$fheight = 710;
+$fwidth = $fheight * 1.5;
 $twidth .= 'px';
 $theight .= 'px';
 $fwidth .= 'px';
