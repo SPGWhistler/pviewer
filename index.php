@@ -18,6 +18,7 @@ $fheight .= 'px';
 	right: 0;
 	bottom: 0;
 	text-align: center;
+	font-size: 30px;
 }
 .container {
 	width: 100%;
@@ -219,6 +220,7 @@ $fheight .= 'px';
 			if (this.enabled === true && this.files[this.cur + 1]) {
 				this.enabled = false;
 				this.rotateImage(true, 0);
+				jQuery('#links').html('');
 				jQuery('#' + this.locations[3]).css({top: this.right_offset.top, left: this.right_offset.left, width: '<?=$twidth;?>', height: '<?=$theight;?>', 'z-index': '-1'});
 				jQuery('#' + this.locations[0]).css({'z-index': '-1'});
 				jQuery('#' + this.locations[1]).css({'z-index': '1'});
@@ -240,6 +242,7 @@ $fheight .= 'px';
 			if (this.enabled === true && this.files[this.cur - 1]) {
 				this.enabled = false;
 				this.rotateImage(true, 0);
+				jQuery('#links').html('');
 				jQuery('#' + this.locations[3]).css({top: this.left_offset.top, left: this.left_offset.left, width: '<?=$twidth;?>', height: '<?=$theight;?>', 'z-index': '-1'});
 				jQuery('#' + this.locations[2]).css({'z-index': '-1'});
 				jQuery('#' + this.locations[1]).css({'z-index': '1'});
@@ -278,11 +281,15 @@ $fheight .= 'px';
 			var self = this;
 			var cur_cur = this.cur;
 			clearTimeout(this.timer);
-			$('<img width="100%" height="100%" />').load(function(){
+			jQuery('<img width="100%" height="100%" />').load(function(){
 				if (cur_cur === self.cur) {
 					jQuery('#' + self.locations[1]).html(this);
 				}
-			}).attr('src', 'images/' + this.dir + '/' + this.files[this.cur]);
+			//}).attr('src', 'images/' + this.dir + '/' + this.files[this.cur]);
+			}).attr('src', this.dir + '/' + this.files[this.cur]);
+			jQuery.getJSON('image.php', {dir: this.dir, file: this.files[this.cur], details: true}, function(data){
+				jQuery('#links').html(data.EXIF.DateTimeOriginal);
+			});
 		},
 
 		startTimer : function() {
@@ -374,8 +381,10 @@ $fheight .= 'px';
 		<div class="clear"></div>
 	</div>
 	<div id="d" class="behind"></div>
-	<div class="links">
-		<a id="left" href="#">&lt;--</a> | <a id="right" href="#">--&gt;</a>
+	<div id="links" class="links">
+		<?php
+		//<a id="left" href="#">&lt;--</a> | <a id="right" href="#">--&gt;</a>
+		?>
 	</div>
 </div>
 <div id="dirlist"></div>
