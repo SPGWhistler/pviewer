@@ -288,7 +288,12 @@ $fheight .= 'px';
 			//}).attr('src', 'images/' + this.dir + '/' + this.files[this.cur]);
 			}).attr('src', this.dir + '/' + this.files[this.cur]);
 			jQuery.getJSON('image.php', {dir: this.dir, file: this.files[this.cur], details: true}, function(data){
-				jQuery('#links').html(data.EXIF.DateTimeOriginal);
+				var myyear = data.EXIF.DateTimeOriginal.substr(0, 4);
+				var mymonthint = parseInt(data.EXIF.DateTimeOriginal.substr(5, 2), 10);
+				var months = ['', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+				var mymonth = months[mymonthint];
+				var myday = data.EXIF.DateTimeOriginal.substr(8, 2);
+				jQuery('#links').html(mymonth + " " + myday + " " + myyear);
 			});
 		},
 
