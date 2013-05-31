@@ -12,6 +12,9 @@ $fheight .= 'px';
 <head>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
 <style>
+.green {
+	background-color: green;
+}
 .links {
 	position: fixed;
 	left: 0;
@@ -294,6 +297,14 @@ $fheight .= 'px';
 				var mymonth = months[mymonthint];
 				var myday = data.EXIF.DateTimeOriginal.substr(8, 2);
 				jQuery('#links').html(mymonth + " " + myday + " " + myyear);
+				jQuery.getJSON('save.php', {checkonly: true, dir: self.dir, file: self.files[self.cur]}, function(data){
+					console.log(data);
+					if (data.in_list === true) {
+						jQuery('#links').addClass('green');
+					} else {
+						jQuery('#links').removeClass('green');
+					}
+				});
 			});
 		},
 
@@ -344,7 +355,19 @@ $fheight .= 'px';
 			var self = this;
 			jQuery.getJSON('save.php', {dir: this.dir, file: this.files[this.cur]}, function(data){
 				if (data.success === false) {
-					alert("File not added to list: " + data.reason);
+					if (data.reason === "duplicate"){
+						if (confirm("File is already in the list. Click OK to REMOVE it. Or click CANCEL to KEEP it in the list.")) {
+							jQuery.getJSON('save.php', {'delete': true, dir: self.dir, file: self.files[self.cur]}, function(newdata){
+								if (newdata.success === false) {
+									alert("File not removed from list: " + newdata.reason);
+								} else {
+									self.moveNext();
+								}
+							});
+						}
+					} else {
+						alert("File not added to list: " + data.reason);
+					}
 				} else {
 					self.moveNext();
 				}
