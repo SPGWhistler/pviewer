@@ -1,5 +1,5 @@
 <?php
-$save_file = 'list2.txt';
+$save_file = 'list3.txt';
 $output = array(
 	'success' => FALSE,
 	'reason' => 'file_error'
