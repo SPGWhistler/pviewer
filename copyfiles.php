@@ -1,7 +1,8 @@
 <?php
-$copy_from = '/Users/tpetty/Sites/pviewer/images';
-$copy_to = '/Users/tpetty/Sites/pviewer/ian';
-$file_list = '/Users/tpetty/Sites/pviewer/list.txt';
+//$copy_from = '/Users/tpetty/Sites/pviewer/images';
+$copy_from = '/Users/tpetty/Sites/pviewer';
+$copy_to = '/Users/tpetty/Sites/pviewer/ian2';
+$file_list = '/Users/tpetty/Sites/pviewer/list2.txt';
 date_default_timezone_set('America/New_York');
 
 $files = @file($file_list, FILE_IGNORE_NEW_LINES);
