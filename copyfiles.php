@@ -1,9 +1,19 @@
 <?php
-//$copy_from = '/Users/tpetty/Sites/pviewer/images';
-$copy_from = '/Users/tpetty/Sites/pviewer';
-$copy_to = '/Users/tpetty/Sites/pviewer/ian3';
-$file_list = '/Users/tpetty/Sites/pviewer/list3.txt';
+$copy_from = '/Users/tpetty/Sites/pviewer/images';
+//$copy_from = '/Users/tpetty/Sites/pviewer';
+$copy_to = '/Users/tpetty/Sites/pviewer/2013';
+$file_list = '/Users/tpetty/Sites/pviewer/2013.txt';
 date_default_timezone_set('America/New_York');
+
+$opts = getopt('d');
+
+if (isset($opts['d'])) {
+	//Delete files in destination directory first
+	$tfiles = glob($copy_to . "/*.JPG");
+	foreach ($tfiles as $tfile) {
+		unlink($tfile);
+	}
+}
 
 $files = @file($file_list, FILE_IGNORE_NEW_LINES);
 echo "Starting " . count($files) . " files...\n";
