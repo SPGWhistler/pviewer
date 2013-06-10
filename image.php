@@ -1,7 +1,7 @@
 <?php
 //$dir = '/Volumes/media_archive/new_media_archive_1';
-//$dir = '/Users/tpetty/Sites/pviewer/images';
-$dir = '/Users/tpetty/Sites/pviewer';
+$dir = '/Users/tpetty/Sites/pviewer/images';
+//$dir = '/Users/tpetty/Sites/pviewer';
 //$dir = '/Users/tpetty/Pictures/Eye-Fi';
 chdir($dir);
 chdir($_GET['dir']);

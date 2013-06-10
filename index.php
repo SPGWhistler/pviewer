@@ -288,8 +288,8 @@ $fheight .= 'px';
 				if (cur_cur === self.cur) {
 					jQuery('#' + self.locations[1]).html(this);
 				}
-			//}).attr('src', 'images/' + this.dir + '/' + this.files[this.cur]);
-			}).attr('src', this.dir + '/' + this.files[this.cur]);
+			}).attr('src', 'images/' + this.dir + '/' + this.files[this.cur]);
+			//}).attr('src', this.dir + '/' + this.files[this.cur]);
 			jQuery.getJSON('image.php', {dir: this.dir, file: this.files[this.cur], details: true}, function(data){
 				var myyear = data.EXIF.DateTimeOriginal.substr(0, 4);
 				var mymonthint = parseInt(data.EXIF.DateTimeOriginal.substr(5, 2), 10);

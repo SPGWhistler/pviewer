@@ -1,7 +1,7 @@
 <?php
 //$dir = '/Volumes/media_archive/new_media_archive_1';
-//$dir = 'images';
-$dir = '/Users/tpetty/Sites/pviewer';
+$dir = 'images';
+//$dir = '/Users/tpetty/Sites/pviewer';
 //$dir = '/Users/tpetty/Pictures/Eye-Fi';
 $pattern = '*.{jpg,JPG}';
 $flags = GLOB_BRACE;
