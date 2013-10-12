@@ -1,5 +1,5 @@
 <?php
-$save_file = '2013.txt';
+$save_file = 'kim.txt';
 $output = array(
 	'success' => FALSE,
 	'reason' => 'file_error'
