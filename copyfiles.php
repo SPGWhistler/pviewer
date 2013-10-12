@@ -1,8 +1,8 @@
 <?php
-$copy_from = '/Users/tpetty/Sites/pviewer/images';
-//$copy_from = '/Users/tpetty/Sites/pviewer';
-$copy_to = '/Users/tpetty/Sites/pviewer/2013';
-$file_list = '/Users/tpetty/Sites/pviewer/2013.txt';
+//$copy_from = '/Users/tpetty/Sites/images';
+$copy_from = '/Users/tpetty/Sites/pviewer';
+$copy_to = '/Users/tpetty/Sites/pviewer/kim3';
+$file_list = '/Users/tpetty/Sites/pviewer/kim3.txt';
 date_default_timezone_set('America/New_York');
 
 $opts = getopt('d');
