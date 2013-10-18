@@ -12,7 +12,7 @@ $i = 1;
 while (!feof($file_handle)) {
 	$dates = array();
 	$file = $base_path . trim(fgets($file_handle));
-	echo $i . ' of ' . $lines . "\n";
+	echo $i . ' of ' . $lines . " (" . floor(($i / $lines) * 100) . "%)\n";
 
 	//Get date from exif
 	$data = @exif_read_data($file, NULL, TRUE);
@@ -41,10 +41,11 @@ while (!feof($file_handle)) {
 	//Figure out which date to use
 	$date = getCorrectDate($dates);
 
-	$directories[date('Ymd', $date)][] = basename($file);
+	$directories[date('Ymd', $date)][] = $file;
 	$i++;
 }
 fclose($file_handle);
+file_put_contents('pics_array.txt', serialize($directories));
 echo count($directories);
 exit;
 
