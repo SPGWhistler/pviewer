@@ -7,9 +7,10 @@ $base_path = '/Volumes/media_archive/';
 $file_handle = fopen($input, "r");
 
 $directories = array();
+$limit = false; //Set to an integer to stop at that many
 
 $i = 1;
-while (!feof($file_handle)) {
+while (!feof($file_handle) && (!$limit || (is_int($limit) && $i <= $limit))) {
 	$dates = array();
 	$file = $base_path . trim(fgets($file_handle));
 	echo $i . ' of ' . $lines . " (" . floor(($i / $lines) * 100) . "%)\n";
@@ -41,9 +42,21 @@ while (!feof($file_handle)) {
 	//Figure out which date to use
 	$date = getCorrectDate($dates);
 
-	$directories[date('Ymd', $date)][] = $file;
+	$human_dates = array();
+	foreach ($dates as $d) {
+		$human_dates[] = date('Y-m-d H:i:s', $d);
+	}
+
+	$directories[date('Ymd', $date)][] = array(
+		'file' => $file,
+		//'basename' => basename($file),
+		//'dates' => $dates,
+		'human_dates' => $human_dates,
+		'matches' => $matches
+	);
 	$i++;
 }
+echo "finished.\n";
 fclose($file_handle);
 file_put_contents('pics_array.txt', serialize($directories));
 echo count($directories);
